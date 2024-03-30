@@ -66,43 +66,36 @@ actor Assistant {
   public func clearCompleted(): async(){
     todos:= Map.mapFilter<Nat, ToDo, ToDo>(todos, Nat.equal, natHash, 
     func(_,todo){if(todo.completed) null else ?todo});
-  }
+  };
 
 
-      // New functionality: Mark all todos as completed
-    public func completeAllTodos(): async () {
-        for (id in todos.keys()) {
-            completeTodo(id);
-        }
-    };
+  // New function to delete a todo item
+  public func deleteTodo(id: Nat): async() {
+    ignore do ?{
+      todos.remove(id);
+    }
+  };
 
-    // New functionality: Remove a todo by ID
-    public func removeTodo(id: Nat): async () {
-        todos.remove(id);
-    };
+  // New function to mark a todo as incomplete
+  //If someone mistakenly marked todo item as completed, using this new function they can reverse the change they made
+  public func markIncomplete(id: Nat): async() {
+    switch (todos.get(id)) {
+      case (?todo) {
+        todos.put(id, {todo with completed = false});
+      };
+      case null {};
+    }
+  };
 
-    // New functionality: Update a todo's description
-    public func updateTodoDescription(id: Nat, newDescription: Text): async () {
-        ignore do ? {
-            let todo = todos.get(id)!;
-            todos.put(id, { description = newDescription; completed = todo.completed });
-        }
-    };
+  // New function to edit a todo description
+  public func editTodoDescription(id: Nat, newDescription: Text): async() {
+    switch (todos.get(id)) {
+      case (?todo) {
+        todos.put(id, {todo with description = newDescription});
+      };
+      case null {};
+    }
+  };
 
-    // New functionality: Get a specific todo by ID
-    public query func getTodoById(id: Nat): async ?ToDo {
-        todos.get(id)
-    };
-
-    // New functionality: Clear all completed todos
-    public func clearCompleted(): async () {
-        todos := Map.mapFilter<Nat, ToDo, ToDo>(
-            todos,
-            Nat.equal,
-            natHash,
-            func(_, todo) { if (todo.completed) null else ?todo }
-        );
-    };
-
-    
+  
 };
