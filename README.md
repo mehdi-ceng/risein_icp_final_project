@@ -1,4 +1,4 @@
-# todo
+# improved todo
 
 Welcome to your my improved todo project.
 New functionalities:
