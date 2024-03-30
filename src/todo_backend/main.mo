@@ -68,4 +68,41 @@ actor Assistant {
     func(_,todo){if(todo.completed) null else ?todo});
   }
 
+
+      // New functionality: Mark all todos as completed
+    public func completeAllTodos(): async () {
+        for (id in todos.keys()) {
+            completeTodo(id);
+        }
+    };
+
+    // New functionality: Remove a todo by ID
+    public func removeTodo(id: Nat): async () {
+        todos.remove(id);
+    };
+
+    // New functionality: Update a todo's description
+    public func updateTodoDescription(id: Nat, newDescription: Text): async () {
+        ignore do ? {
+            let todo = todos.get(id)!;
+            todos.put(id, { description = newDescription; completed = todo.completed });
+        }
+    };
+
+    // New functionality: Get a specific todo by ID
+    public query func getTodoById(id: Nat): async ?ToDo {
+        todos.get(id)
+    };
+
+    // New functionality: Clear all completed todos
+    public func clearCompleted(): async () {
+        todos := Map.mapFilter<Nat, ToDo, ToDo>(
+            todos,
+            Nat.equal,
+            natHash,
+            func(_, todo) { if (todo.completed) null else ?todo }
+        );
+    };
+
+    
 };
